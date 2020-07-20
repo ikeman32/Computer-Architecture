@@ -89,9 +89,58 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
+        elif op == "SUB":
+            self.reg[reg_a] -= self.reg[reg_b]
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
+        elif op == "DIV":
+            self.reg[reg_a] /= self.reg[reg_b]
+        elif op == "MOD":
+            self.reg[reg_a] %= self.reg[reg_b]
+        elif op == "INC":
+            if reg_a:
+                reg_a += 1
+            else: 
+                reg_b += 1
+        elif op == "DEC":
+            if reg_a:
+                reg_a -= 1
+            else: 
+                reg_b -= 1
+        elif op == "CMP":
+            if self.reg[reg_a] == self.reg[reg_b]:
+                self.JEQ = 1
+            else:
+                self.JEQ = 0
+
+            if self.reg[reg_a] < self.reg[reg_b]:
+                self.JLT = 1
+            else:
+                self.JLT = 0
+
+            if self.reg[reg_a] > self.reg[reg_b]:
+                self.JGT = 1
+            else:
+                self.JGT = 0
+           
+        elif op == "AND":
+            self.reg[reg_a] &= self.reg[reg_b]
+        elif op == "OR":
+            self.reg[reg_a] |= self.reg[reg_b]
+        elif op == "XOR":
+            self.reg[reg_a] ^= self.reg[reg_b]
+        elif op == "SHL":
+            self.reg[reg_a] <<= self.reg[reg_b]
+        elif op == "SHR":
+            self.reg[reg_a] >>= self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
+
+    def ram_read(self):
+        pass
+
+    def ram_write(self):
+        pass
 
     def trace(self):
         """
