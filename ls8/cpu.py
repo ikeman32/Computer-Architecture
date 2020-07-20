@@ -166,5 +166,14 @@ class CPU:
         """Run the CPU."""
         pass
 
-    def handle_hlt():
+    def handle_hlt(self):
         sys.exit()
+    
+    def handle_prn(self):
+        prn = self.ram_read(self.pc + 1)
+        print(self.reg[prn])
+
+    def handle_ldi(self):
+        index = self.ram_read(self.pc + 1)
+        value = self.ram_read(self.pc + 2)
+        self.reg[index] = int(value)
