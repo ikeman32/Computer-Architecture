@@ -1,6 +1,57 @@
 """CPU functionality."""
 
 import sys
+# ALU ops
+ADD = 0b10100000
+SUB = 0b10100001
+MUL = 0b10100010
+DIV = 0b10100011 #divide
+MOD = 0b10100100
+
+INC = 0b01100101 #increment
+DEC = 0b01100110 #decrement
+
+CMP = 0b10100111 #compare regA with regB
+
+AND = 0b10101000
+NOT = 0b01101001
+OR = 0b10101010
+XOR = 0b10101011
+SHL = 0b10101100 #shift left
+SHR = 0b10101101 #shift right
+
+# PC mutators
+CALL = 0b01010000 #call subroutine
+RET = 0b00010001 # return
+
+INT = 0b01010010 #interupt
+IRET = 0b00010011 #interupt return
+
+JMP = 0b01010100 #jump
+JEQ = 0b01010101 #jump if equal
+JNE = 0b01010110 #jump if false
+JGT = 0b01010111 #jump greater-than
+JLT = 0b01011000 #jump less-than
+JLE = 0b01011001 #jump less-than or equal
+JGE = 0b01011010 #jump greater-than or equal
+
+#others
+NOP = 0b00000000 #no operation, do nothing
+
+HLT = 0b00000001 #halt
+
+LDI = 0b10000010 #set reg value to integer
+
+LD = 0b10000011 #load regA with regB
+ST = 0b10000100 #store regB in regA
+
+PUSH = 0b01000101 #push to stack
+POP = 0b01000110 #pop from stack
+
+PRN = 0b01000111 #print number
+PRA = 0b01001000 #print alpha character
+
+
 
 class CPU:
     """Main CPU class."""
@@ -10,6 +61,7 @@ class CPU:
         self.ram = [0] * 256
         self.reg = [0] * 8
         self.pc = 0
+
     def load(self):
         """Load a program into memory."""
 
@@ -19,12 +71,12 @@ class CPU:
 
         program = [
             # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
+            LDI, # LDI R0,8
+            NOP,
             0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
+            PRN, # PRN R0
+            NOP,
+            HLT, # HLT
         ]
 
         for instruction in program:
