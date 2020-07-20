@@ -136,11 +136,11 @@ class CPU:
         else:
             raise Exception("Unsupported ALU operation")
 
-    def ram_read(self):
-        pass
+    def ram_read(self, mem):
+        return self.ram[mem]
 
-    def ram_write(self):
-        pass
+    def ram_write(self, mem, value):
+        return self.ram[mem] = value
 
     def trace(self):
         """
@@ -165,3 +165,6 @@ class CPU:
     def run(self):
         """Run the CPU."""
         pass
+
+    def handle_hlt():
+        sys.exit()
