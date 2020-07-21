@@ -5,52 +5,53 @@ import sys
 ADD = 0b10100000
 SUB = 0b10100001
 MUL = 0b10100010
-DIV = 0b10100011 #divide
+DIV = 0b10100011  # divide
 MOD = 0b10100100
 
-INC = 0b01100101 #increment
-DEC = 0b01100110 #decrement
+INC = 0b01100101  # increment
+DEC = 0b01100110  # decrement
 
-CMP = 0b10100111 #compare regA with regB
+CMP = 0b10100111  # compare regA with regB
 
 AND = 0b10101000
 NOT = 0b01101001
 OR = 0b10101010
 XOR = 0b10101011
-SHL = 0b10101100 #shift left
-SHR = 0b10101101 #shift right
+SHL = 0b10101100  # shift left
+SHR = 0b10101101  # shift right
 
 # PC mutators
-CALL = 0b01010000 #call subroutine
-RET = 0b00010001 # return
+CALL = 0b01010000  # call subroutine
+RET = 0b00010001  # return
 
-INT = 0b01010010 #interupt
-IRET = 0b00010011 #interupt return
+INT = 0b01010010  # interupt
+IRET = 0b00010011  # interupt return
 
-JMP = 0b01010100 #jump
-JEQ = 0b01010101 #jump if equal
-JNE = 0b01010110 #jump if false
-JGT = 0b01010111 #jump greater-than
-JLT = 0b01011000 #jump less-than
-JLE = 0b01011001 #jump less-than or equal
-JGE = 0b01011010 #jump greater-than or equal
+JMP = 0b01010100  # jump
+JEQ = 0b01010101  # jump if equal
+JNE = 0b01010110  # jump if false
+JGT = 0b01010111  # jump greater-than
+JLT = 0b01011000  # jump less-than
+JLE = 0b01011001  # jump less-than or equal
+JGE = 0b01011010  # jump greater-than or equal
 
-#others
-NOP = 0b00000000 #no operation, do nothing
+# others
+NOP = 0b00000000  # no operation, do nothing
 
-HLT = 0b00000001 #halt
+HLT = 0b00000001  # halt
 
-LDI = 0b10000010 #set reg value to integer
+LDI = 0b10000010  # set reg value to integer
 
-LD = 0b10000011 #load regA with regB
-ST = 0b10000100 #store regB in regA
+LD = 0b10000011  # load regA with regB
+ST = 0b10000100  # store regB in regA
 
-PUSH = 0b01000101 #push to stack
-POP = 0b01000110 #pop from stack
+PUSH = 0b01000101  # push to stack
+POP = 0b01000110  # pop from stack
 
-PRN = 0b01000111 #print number
-PRA = 0b01001000 #print alpha character
+PRN = 0b01000111  # print number
+PRA = 0b01001000  # print alpha character
 
+ALU = {ADD, SUB, MUL, DIV, MOD, INC, DEC, CMP, AND, NOT, OR, XOR, SHL, SHR}
 
 
 class CPU:
@@ -64,25 +65,35 @@ class CPU:
 
     def load(self):
         """Load a program into memory."""
-
-        address = 0
-
         # For now, we've just hardcoded a program:
 
-        program = [
-            # From print8.ls8
-            LDI, # LDI R0,8
-            NOP,
-            0b00001000,
-            PRN, # PRN R0
-            NOP,
-            HLT, # HLT
-        ]
+        # program = [
+        #     # From print8.ls8
+        #     LDI,  # LDI R0,8
+        #     NOP,
+        #     0b00001000,
+        #     PRN,  # PRN R0
+        #     NOP,
+        #     HLT,  # HLT
+        # ]
+        file_name = sys.argv[1]
+        address = 0
+        try:
+            
+            with open(f'examples/{file_name}','rb') as file:
+                for line in file:
+                    lines = line.split('#')
+                    inst = lines.strip()
 
-        for instruction in program:
-            self.ram[address] = instruction
-            address += 1
+                    if inst == '':
+                        continue
 
+                    instruction = int(inst, 2)
+                    self.ram_write(address, instruction)
+                    address += 1
+        except:
+            pass
+        
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
@@ -100,12 +111,12 @@ class CPU:
         elif op == "INC":
             if reg_a:
                 reg_a += 1
-            else: 
+            else:
                 reg_b += 1
         elif op == "DEC":
             if reg_a:
                 reg_a -= 1
-            else: 
+            else:
                 reg_b -= 1
         elif op == "CMP":
             if self.reg[reg_a] == self.reg[reg_b]:
@@ -122,7 +133,7 @@ class CPU:
                 self.JGT = 1
             else:
                 self.JGT = 0
-           
+
         elif op == "AND":
             self.reg[reg_a] &= self.reg[reg_b]
         elif op == "OR":
@@ -140,7 +151,8 @@ class CPU:
         return self.ram[mem]
 
     def ram_write(self, mem, value):
-        return self.ram[mem] = value
+        self.ram[mem] = value
+        return self.ram[mem]
 
     def trace(self):
         """
@@ -150,8 +162,8 @@ class CPU:
 
         print(f"TRACE: %02X | %02X %02X %02X |" % (
             self.pc,
-            #self.fl,
-            #self.ie,
+            # self.fl,
+            # self.ie,
             self.ram_read(self.pc),
             self.ram_read(self.pc + 1),
             self.ram_read(self.pc + 2)
@@ -164,16 +176,37 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        while True:
+            pc = self.pc
+            inst = self.ram_read(pc)
+            if inst in ALU:
+                reg_a = self.ram_read(pc + 1)
+                reg_b = self.ram_read(pc + 2)
+                self.alu(inst, reg_a, reg_b)
+                pc += 2
+            
+            if inst is HLT:
+                self.handle_hlt()
+
+            if inst is PRN:
+                self.handle_prn(pc)
+                pc += 1
+            
+            if inst is LDI:
+                self.handle_ldi(pc)
+                pc += 2
+
+            pc += 1
+                    
 
     def handle_hlt(self):
         sys.exit()
-    
-    def handle_prn(self):
-        prn = self.ram_read(self.pc + 1)
+
+    def handle_prn(self, pc):
+        prn = self.ram_read(pc + 1)
         print(self.reg[prn])
 
-    def handle_ldi(self):
-        index = self.ram_read(self.pc + 1)
-        value = self.ram_read(self.pc + 2)
+    def handle_ldi(self, pc):
+        index = self.ram_read(pc + 1)
+        value = self.ram_read(pc + 2)
         self.reg[index] = int(value)
