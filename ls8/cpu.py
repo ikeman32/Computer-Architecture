@@ -62,6 +62,7 @@ class CPU:
         self.ram = [0] * 256
         self.reg = [0] * 8
         self.pc = 0
+        self.reg[8-1] = 0xF4
 
     def load(self, file_name):
         """Load a program into memory."""
@@ -92,27 +93,27 @@ class CPU:
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
 
-        if op == "ADD":
+        if op == ADD:
             self.reg[reg_a] += self.reg[reg_b]
-        elif op == "SUB":
+        elif op == SUB:
             self.reg[reg_a] -= self.reg[reg_b]
-        elif op == "MUL":
+        elif op == MUL:
             self.reg[reg_a] *= self.reg[reg_b]
-        elif op == "DIV":
+        elif op == DIV:
             self.reg[reg_a] /= self.reg[reg_b]
-        elif op == "MOD":
+        elif op == MOD:
             self.reg[reg_a] %= self.reg[reg_b]
-        elif op == "INC":
+        elif op == INC:
             if reg_a:
                 reg_a += 1
             else:
                 reg_b += 1
-        elif op == "DEC":
+        elif op == DEC:
             if reg_a:
                 reg_a -= 1
             else:
                 reg_b -= 1
-        elif op == "CMP":
+        elif op == CMP:
             if self.reg[reg_a] == self.reg[reg_b]:
                 self.JEQ = 1
             else:
@@ -170,17 +171,19 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
+        pc = self.pc
         while True:
-            pc = self.pc
+            
             inst = self.ram_read(pc)
+            # print('inst',inst)
             if inst in ALU:
-                print('yes')
                 reg_a = self.ram_read(pc + 1)
                 reg_b = self.ram_read(pc + 2)
                 self.alu(inst, reg_a, reg_b)
                 pc += 2
             
             if inst is HLT:
+                print('Halted')
                 sys.exit()
 
             if inst is PRN:
@@ -188,16 +191,22 @@ class CPU:
                 pc += 1
             
             if inst is LDI:
+                # print('yes')
                 self.handle_ldi(pc)
                 pc += 2
+                
 
             pc += 1
+            # print(pc)
 
     def handle_prn(self, pc):
         prn = self.ram_read(pc + 1)
         print(self.reg[prn])
 
     def handle_ldi(self, pc):
-        index = self.ram_read(pc + 1)
-        value = self.ram_read(pc + 2)
+        # print(pc)
+        index = self.ram[pc + 1]
+        # print(index)
+        value = self.ram[pc + 2]
+        # print(value)
         self.reg[index] = int(value)

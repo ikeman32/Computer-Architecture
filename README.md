@@ -11,7 +11,7 @@
 - [x] Inventory what is here
 - [x] Implement the `CPU` constructor
 - [x] Add RAM functions `ram_read()` and `ram_write()`
-- [ ] Implement the core of `run()`
+- [x] Implement the core of `run()`
 - [x] Implement the `HLT` instruction handler
 - [x] Add the `LDI` instruction
 - [x] Add the `PRN` instruction
@@ -21,11 +21,11 @@
 - [x] Un-hardcode the machine code
 - [x] Implement the `load()` function to load an `.ls8` file given the filename
       passed in as an argument
-- [ ] Implement a Multiply instruction (run `mult.ls8`)
+- [x] Implement a Multiply instruction (run `mult.ls8`)
 
 ### Day 3: Stack
 
-- [ ] Implement the System Stack and be able to run the `stack.ls8` program
+- [x] Implement the System Stack and be able to run the `stack.ls8` program
 
 ### Day 4: Get `call.ls8` running
 
