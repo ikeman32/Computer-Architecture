@@ -63,7 +63,7 @@ class CPU:
         self.reg = [0] * 8
         self.pc = 0
 
-    def load(self):
+    def load(self, file_name):
         """Load a program into memory."""
         # For now, we've just hardcoded a program:
 
@@ -76,23 +76,17 @@ class CPU:
         #     NOP,
         #     HLT,  # HLT
         # ]
-        file_name = sys.argv[1]
         address = 0
         try:
             
-            with open(f'examples/{file_name}','rb') as file:
-                for line in file:
-                    lines = line.split('#')
-                    inst = lines.strip()
-
-                    if inst == '':
-                        continue
-
-                    instruction = int(inst, 2)
-                    self.ram_write(address, instruction)
+            with open('examples/' + file_name) as file:
+                for line in file.readlines():
+                    l = line.split('#')[0]
+                    inst = l.strip()
+                    self.ram[address] = int(inst, 2)
                     address += 1
         except:
-            pass
+            print('no')
         
 
     def alu(self, op, reg_a, reg_b):
@@ -180,13 +174,14 @@ class CPU:
             pc = self.pc
             inst = self.ram_read(pc)
             if inst in ALU:
+                print('yes')
                 reg_a = self.ram_read(pc + 1)
                 reg_b = self.ram_read(pc + 2)
                 self.alu(inst, reg_a, reg_b)
                 pc += 2
             
             if inst is HLT:
-                self.handle_hlt()
+                sys.exit()
 
             if inst is PRN:
                 self.handle_prn(pc)
@@ -197,10 +192,6 @@ class CPU:
                 pc += 2
 
             pc += 1
-                    
-
-    def handle_hlt(self):
-        sys.exit()
 
     def handle_prn(self, pc):
         prn = self.ram_read(pc + 1)
