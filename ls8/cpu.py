@@ -194,7 +194,26 @@ class CPU:
                 # print('yes')
                 self.handle_ldi(pc)
                 pc += 2
-                
+
+            if inst is PUSH:
+                print('push')
+                self.reg[7] -= 1
+                reg = self.ram[pc + 1]
+                value = self.reg[reg]
+                sp = self.reg[7]
+                self.ram[sp] = value
+
+                pc += 1
+
+            if inst is POP:
+                print('pop')
+                sp = self.reg[7]
+                reg = self.ram[pc + 1]
+                value = self.ram[sp]
+                self.reg[reg] = value
+                self.reg[7] += 1
+
+                pc +=1
 
             pc += 1
             # print(pc)
