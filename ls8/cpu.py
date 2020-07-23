@@ -87,7 +87,8 @@ class CPU:
                     self.ram[address] = int(inst, 2)
                     address += 1
         except:
-            print('no')
+            # print('Load Exception')
+            pass
         
 
     def alu(self, op, reg_a, reg_b):
@@ -171,43 +172,47 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pc = self.pc
+        
         while True:
-            
+            pc = self.pc
             inst = self.ram_read(pc)
             # print('inst',inst)
             if inst in ALU:
+                self.trace()
                 reg_a = self.ram_read(pc + 1)
                 reg_b = self.ram_read(pc + 2)
                 self.alu(inst, reg_a, reg_b)
-                pc += 2
-            
-            if inst is HLT:
+                self.pc += 3
+            elif inst is HLT:
                 print('Halted')
                 sys.exit()
-
-            if inst is PRN:
+            elif inst is PRN:
                 self.handle_prn(pc)
-                pc += 1
-            
-            if inst is LDI:
+                self.pc += 2          
+            elif inst is LDI:
                 # print('yes')
                 self.handle_ldi(pc)
-                pc += 2
-
-            if inst is PUSH:
+                self.pc += 3
+            elif inst is PUSH:
                 # print('push')
                 self.handle_push(pc)
 
-                pc += 1
-
-            if inst is POP:
+                self.pc += 2
+            elif inst is POP:
                 # print('pop')
                 self.handle_pop(pc)
 
-                pc +=1
+                self.pc +=2
+            elif inst is CALL:
+                print('call')
+                self.handle_call(pc)
+            elif inst is RET:
+                print('ret')
+                self.handle_ret()
+            else:
+                self.trace()   
 
-            pc += 1
+            # pc += 1
             # print(pc)
 
     def handle_prn(self, pc):
@@ -246,8 +251,23 @@ class CPU:
         #increment the register Stack Pointer
         self.reg[7] += 1
 
-    def handle_call(self):
-        pass
+    def handle_call(self, pc):
+        # register index
+        reg = self.ram[pc + 1]
+        # get address to function
+        address = self.reg[reg]
+
+        ret_address = pc + 2
+        # decrement the Stack Pointer
+        self.reg[7] -= 1
+        # get the Stack Pointer
+        sp = self.reg[7]
+        #set return address in memory
+        self.ram[sp] = ret_address
+        self.pc = address
 
     def handle_ret(self):
-        pass
+        sp = self.reg[7]
+        ret_address = self.ram[sp] 
+        self.reg[7] += 1
+        self.pc = ret_address
