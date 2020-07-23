@@ -196,22 +196,14 @@ class CPU:
                 pc += 2
 
             if inst is PUSH:
-                print('push')
-                self.reg[7] -= 1
-                reg = self.ram[pc + 1]
-                value = self.reg[reg]
-                sp = self.reg[7]
-                self.ram[sp] = value
+                # print('push')
+                self.handle_push(pc)
 
                 pc += 1
 
             if inst is POP:
-                print('pop')
-                sp = self.reg[7]
-                reg = self.ram[pc + 1]
-                value = self.ram[sp]
-                self.reg[reg] = value
-                self.reg[7] += 1
+                # print('pop')
+                self.handle_pop(pc)
 
                 pc +=1
 
@@ -229,3 +221,33 @@ class CPU:
         value = self.ram[pc + 2]
         # print(value)
         self.reg[index] = int(value)
+
+    def handle_push(self, pc):
+        # decrement the Stack Pointer
+        self.reg[7] -= 1
+        # register index
+        reg = self.ram[pc + 1]
+        # value to place in the register
+        value = self.reg[reg]
+        # get the Stack Pointer
+        sp = self.reg[7]
+        # Place value in to ram
+        self.ram[sp] = value
+
+    def handle_pop(self, pc):
+        # get Stack Pointer
+        sp = self.reg[7]
+        #register index
+        reg = self.ram[pc + 1]
+        # Value to place in register
+        value = self.ram[sp]
+        #place value into register
+        self.reg[reg] = value
+        #increment the register Stack Pointer
+        self.reg[7] += 1
+
+    def handle_call(self):
+        pass
+
+    def handle_ret(self):
+        pass
